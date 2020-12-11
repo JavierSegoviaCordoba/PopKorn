@@ -4,7 +4,7 @@ val apacheVersion = "2.7"
 val compileTestVersion = "0.18"
 
 plugins {
-    kotlin("jvm")
+    kotlin("multiplatform")
     id("org.jetbrains.dokka")
     id("pk-publish")
 }
@@ -21,39 +21,42 @@ val dokkaJar by tasks.creating(Jar::class) {
     from(tasks.dokka)
 }
 
-val sourcesJar by tasks.creating(Jar::class) {
-    archiveClassifier.set("sources")
-    from(sourceSets.main.get().allSource)
-}
-
 publishing {
     publications {
-        create<MavenPublication>("compiler") {
-            from(components["kotlin"])
-            artifact(dokkaJar)
-            artifact(sourcesJar)
+        publications.configureEach {
+            if (this is MavenPublication) {
+                artifact(dokkaJar)
+            }
         }
     }
 }
-
 
 repositories {
     mavenCentral()
     jcenter()
 }
 
+kotlin {
+    jvm()
 
-dependencies {
+    sourceSets {
+        val jvmMain by getting {
+            dependencies {
+                implementation(project(":popkorn"))
+                implementation(kotlin("stdlib"))
+                implementation(kotlin("reflect"))
+                implementation("com.squareup:kotlinpoet:$kotlinPoetVersion")
+                implementation("org.jetbrains.kotlinx:kotlinx-metadata-jvm:$kotlinxMetadataVersion")
+            }
+        }
 
-    implementation(project(":popkorn"))
-    implementation(kotlin("stdlib"))
-    implementation(kotlin("reflect"))
-    implementation("com.squareup:kotlinpoet:$kotlinPoetVersion")
-    implementation("org.jetbrains.kotlinx:kotlinx-metadata-jvm:$kotlinxMetadataVersion")
-
-    testImplementation(kotlin("test"))
-    testImplementation(kotlin("test-junit"))
-    testImplementation("com.google.testing.compile:compile-testing:$compileTestVersion")
-    testImplementation("commons-io:commons-io:$apacheVersion")
-
+        val jvmTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+                implementation(kotlin("test-junit"))
+                implementation("com.google.testing.compile:compile-testing:$compileTestVersion")
+                implementation("commons-io:commons-io:$apacheVersion")
+            }
+        }
+    }
 }
