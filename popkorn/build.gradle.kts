@@ -1,4 +1,7 @@
+val lifecycleVersion = "2.2.0"
+
 plugins {
+    id("com.android.library")
     kotlin("multiplatform")
     id("org.jetbrains.dokka")
     id("pk-publish")
@@ -27,14 +30,16 @@ publishing {
     }
 }
 
-
 repositories {
     mavenCentral()
     jcenter()
+    google()
 }
 
 kotlin {
     jvm()
+
+    android()
 
     js {
         browser {}
@@ -57,6 +62,13 @@ kotlin {
         }
         val jvmMain by getting
         val jvmTest by getting
+
+        val androidMain by getting {
+            dependencies {
+                dependsOn(jvmMain)
+                implementation( "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion")
+            }
+        }
 
         val jsMain by getting
         val jsTest by getting {
@@ -82,9 +94,26 @@ kotlin {
             dependsOn(commonTest)
         }
     }
-
-
 }
 
+android {
+    compileSdkVersion(30)
 
+    defaultConfig {
+        minSdkVersion(21)
+        targetSdkVersion(30)
+        versionCode = 1
+        versionName = "1.0"
+    }
 
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    sourceSets {
+        named("main") {
+            manifest.srcFile("src/androidMain/AndroidManifest.xml")
+        }
+    }
+}
