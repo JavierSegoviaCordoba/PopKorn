@@ -4,7 +4,6 @@ plugins {
     id("pk-publish")
 }
 
-
 tasks.dokka {
     outputFormat = "html"
     outputDirectory = "$buildDir/javadoc"
@@ -26,7 +25,6 @@ publishing {
         }
     }
 }
-
 
 repositories {
     mavenCentral()
@@ -68,7 +66,6 @@ kotlin {
         val iosMain by getting
         val iosTest by getting
 
-
         val linuxX64Main by getting
         val linuxArm64Main by getting
         val macosX64Main by getting
@@ -82,9 +79,4 @@ kotlin {
             dependsOn(commonTest)
         }
     }
-
-
 }
-
-
-

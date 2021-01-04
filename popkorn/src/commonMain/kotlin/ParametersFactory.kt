@@ -16,7 +16,8 @@ class ParametersFactory private constructor(private val params: List<Instance<*>
 
         fun <T : Any> add(instance: Instance<T>) = parameters.add(instance)
 
-        fun <T : Any> add(instance: T, type: KClass<out T>, environment: String? = null) = add(Instance(instance, type, environment))
+        fun <T : Any> add(instance: T, type: KClass<out T>, environment: String? = null) =
+            add(Instance(instance, type, environment))
 
         fun <T : Any> add(instance: T, environment: String? = null) = add(instance, instance::class, environment)
 
